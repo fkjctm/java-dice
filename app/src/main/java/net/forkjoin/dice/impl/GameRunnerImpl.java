@@ -9,20 +9,20 @@ public class GameRunnerImpl implements GameRunner {
   private GameInitializer gameInitializer;
   private GetHumanMove getHumanMove;
   private GetComputerMove getComputerMove;
-  private DetermineIfGameIsOver determineIfGameIsOver;
+  private DetermineIfGameContinues determineIfGameContinues;
   private UpdateContest updateContest;
   private PrintGameResults printGameResults;
 
   public GameRunnerImpl(GameInitializer gameInitializer,
                         GetHumanMove getHumanMove,
                         GetComputerMove getComputerMove,
-                        DetermineIfGameIsOver determineIfGameIsOver,
+                        DetermineIfGameContinues determineIfGameContinues,
                         UpdateContest updateContest,
                         PrintGameResults printGameResults) {
     this.gameInitializer = gameInitializer;
     this.getHumanMove = getHumanMove;
     this.getComputerMove = getComputerMove;
-    this.determineIfGameIsOver = determineIfGameIsOver;
+    this.determineIfGameContinues = determineIfGameContinues;
     this.updateContest = updateContest;
     this.printGameResults = printGameResults;
   }
@@ -35,7 +35,7 @@ public class GameRunnerImpl implements GameRunner {
     do {
       gameState = getHumanMove.get(gameState);
       gameState = getComputerMove.get(gameState);
-    } while(determineIfGameIsOver.determine(gameState));
+    } while(determineIfGameContinues.determine(gameState));
 
     printGameResults.print(gameState);
     return updateContest.update(gameState, contestState);

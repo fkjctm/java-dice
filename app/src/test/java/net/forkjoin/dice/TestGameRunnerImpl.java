@@ -16,7 +16,7 @@ public class TestGameRunnerImpl {
   private GameInitializer gameInitializer;
   private GetHumanMove getHumanMove;
   private GetComputerMove getComputerMove;
-  private DetermineIfGameIsOver determineIfGameIsOver;
+  private DetermineIfGameContinues determineIfGameContinues;
   private UpdateContest updateContest;
   private PrintGameResults printGameResults;
   private GameRunnerImpl service;
@@ -26,11 +26,11 @@ public class TestGameRunnerImpl {
     gameInitializer = mock(GameInitializer.class);
     getHumanMove = mock(GetHumanMove.class);
     getComputerMove = mock(GetComputerMove.class);
-    determineIfGameIsOver = mock(DetermineIfGameIsOver.class);
+    determineIfGameContinues = mock(DetermineIfGameContinues.class);
     updateContest = mock(UpdateContest.class);
     printGameResults = mock(PrintGameResults.class);
     service = new GameRunnerImpl(gameInitializer, getHumanMove, getComputerMove,
-      determineIfGameIsOver, updateContest, printGameResults);
+      determineIfGameContinues, updateContest, printGameResults);
   }
 
   @Test
@@ -45,7 +45,7 @@ public class TestGameRunnerImpl {
     var stateAfterComputerMove = new GameState();
     when(getComputerMove.get(stateAfterHumanMove)).thenReturn(stateAfterComputerMove);
 
-    when(determineIfGameIsOver.determine(stateAfterComputerMove)).thenReturn(false);
+    when(determineIfGameContinues.determine(stateAfterComputerMove)).thenReturn(false);
 
     var updatedContestState = new ContestState();
     when(updateContest.update(eq(stateAfterComputerMove), any(ContestState.class))).thenReturn(updatedContestState);
@@ -68,7 +68,7 @@ public class TestGameRunnerImpl {
     var stateAfterComputerMove = new GameState();
     when(getComputerMove.get(stateAfterHumanMove)).thenReturn(stateAfterComputerMove);
 
-    when(determineIfGameIsOver.determine(stateAfterComputerMove)).thenReturn(true);
+    when(determineIfGameContinues.determine(stateAfterComputerMove)).thenReturn(true);
 
     var stateAfterSecondHumanMove = new GameState();
     when(getHumanMove.get(stateAfterComputerMove)).thenReturn(stateAfterSecondHumanMove);
@@ -76,7 +76,7 @@ public class TestGameRunnerImpl {
     var stateAfterSecondComputerMove = new GameState();
     when(getComputerMove.get(stateAfterSecondHumanMove)).thenReturn(stateAfterSecondComputerMove);
 
-    when(determineIfGameIsOver.determine(stateAfterSecondComputerMove)).thenReturn(false);
+    when(determineIfGameContinues.determine(stateAfterSecondComputerMove)).thenReturn(false);
 
     var updatedContestState = new ContestState();
     when(updateContest.update(eq(stateAfterSecondComputerMove), any(ContestState.class))).thenReturn(updatedContestState);
