@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.stream.Stream;
 
 public class ContestState {
-  private final AbstractSequentialList<GameState> gameHistory;
+  protected final AbstractSequentialList<GameState> gameHistory;
 
   public ContestState() {
     gameHistory = new LinkedList<>();
@@ -21,5 +21,12 @@ public class ContestState {
 
   public Stream<GameState> getGameHistory() {
     return gameHistory.stream();
+  }
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    var newState = new ContestState();
+    newState.gameHistory.addAll(this.gameHistory);
+    return newState;
   }
 }
