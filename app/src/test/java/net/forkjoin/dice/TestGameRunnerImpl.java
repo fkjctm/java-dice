@@ -5,6 +5,7 @@ import net.forkjoin.dice.data.GameState;
 import net.forkjoin.dice.impl.GameRunnerImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +23,7 @@ public class TestGameRunnerImpl {
   private GameRunnerImpl service;
 
   @BeforeEach
-  private void init() {
+  void Init() {
     gameInitializer = mock(GameInitializer.class);
     getHumanMove = mock(GetHumanMove.class);
     getComputerMove = mock(GetComputerMove.class);
@@ -33,58 +34,86 @@ public class TestGameRunnerImpl {
       determineIfGameContinues, updateContest, printGameResults);
   }
 
-  @Test
-  @DisplayName("When a game only takes one round")
-  public void SingleRound() {
-    var stateInit = new GameState();
-    when(gameInitializer.initialize()).thenReturn(stateInit);
+  class GameSetup {
+    GameState stateInit;
+    GameState stateAfterHumanMove;
+    GameState stateAfterComputerMove;
+    ContestState updatedContestState;
+    ContestState result;
 
-    var stateAfterHumanMove = new GameState();
-    when(getHumanMove.get(stateInit)).thenReturn(stateAfterHumanMove);
+    void Setup() {
+      stateInit = new GameState();
+      when(gameInitializer.initialize()).thenReturn(stateInit);
 
-    var stateAfterComputerMove = new GameState();
-    when(getComputerMove.get(stateAfterHumanMove)).thenReturn(stateAfterComputerMove);
+      stateAfterHumanMove = new GameState();
+      when(getHumanMove.get(stateInit)).thenReturn(stateAfterHumanMove);
 
-    when(determineIfGameContinues.determine(stateAfterComputerMove)).thenReturn(false);
-
-    var updatedContestState = new ContestState();
-    when(updateContest.update(eq(stateAfterComputerMove), any(ContestState.class))).thenReturn(updatedContestState);
-
-    var result = service.run(new ContestState());
-
-    assertEquals(updatedContestState, result);
-    verify(printGameResults).print(stateAfterComputerMove);
+      stateAfterComputerMove = new GameState();
+      when(getComputerMove.get(stateAfterHumanMove)).thenReturn(stateAfterComputerMove);
+    }
   }
 
-  @Test
-  @DisplayName("When a game takes multiple rounds")
-  public void MultiRound() {
-    var stateInit = new GameState();
-    when(gameInitializer.initialize()).thenReturn(stateInit);
+  @Nested @DisplayName("Single round game")
+  class SingleRound extends GameSetup {
 
-    var stateAfterHumanMove = new GameState();
-    when(getHumanMove.get(stateInit)).thenReturn(stateAfterHumanMove);
+    @BeforeEach
+    void Setup() {
+      super.Setup();
+      when(determineIfGameContinues.determine(stateAfterComputerMove)).thenReturn(false);
 
-    var stateAfterComputerMove = new GameState();
-    when(getComputerMove.get(stateAfterHumanMove)).thenReturn(stateAfterComputerMove);
+      updatedContestState = new ContestState();
+      when(updateContest.update(eq(stateAfterComputerMove), any(ContestState.class))).thenReturn(updatedContestState);
 
-    when(determineIfGameContinues.determine(stateAfterComputerMove)).thenReturn(true);
+      result = service.run(new ContestState());
+    }
 
-    var stateAfterSecondHumanMove = new GameState();
-    when(getHumanMove.get(stateAfterComputerMove)).thenReturn(stateAfterSecondHumanMove);
+    @Test @DisplayName("The contest state should be updated")
+    void TestContestState() {
+      assertEquals(updatedContestState, result);
+    }
 
-    var stateAfterSecondComputerMove = new GameState();
-    when(getComputerMove.get(stateAfterSecondHumanMove)).thenReturn(stateAfterSecondComputerMove);
+    @Test @DisplayName("The result of the game should have been called with the game state after the computer move")
+    void PrintGameState() {
+      verify(printGameResults).print(stateAfterComputerMove);
+    }
 
-    when(determineIfGameContinues.determine(stateAfterSecondComputerMove)).thenReturn(false);
+  }
 
-    var updatedContestState = new ContestState();
-    when(updateContest.update(eq(stateAfterSecondComputerMove), any(ContestState.class))).thenReturn(updatedContestState);
+  @Nested @DisplayName("Multiple round game")
+  class MultiRound extends GameSetup {
+    GameState stateAfterSecondHumanMove;
+    GameState stateAfterSecondComputerMove;
+    ContestState updatedContestState;
 
-    var result = service.run(new ContestState());
+    @BeforeEach
+    void Setup() {
+      super.Setup();
+      when(determineIfGameContinues.determine(stateAfterComputerMove)).thenReturn(true);
 
-    assertEquals(updatedContestState, result);
-    verify(printGameResults).print(stateAfterSecondComputerMove);
+      stateAfterSecondHumanMove = new GameState();
+      when(getHumanMove.get(stateAfterComputerMove)).thenReturn(stateAfterSecondHumanMove);
+
+      stateAfterSecondComputerMove = new GameState();
+      when(getComputerMove.get(stateAfterSecondHumanMove)).thenReturn(stateAfterSecondComputerMove);
+
+      when(determineIfGameContinues.determine(stateAfterSecondComputerMove)).thenReturn(false);
+
+      updatedContestState = new ContestState();
+      when(updateContest.update(eq(stateAfterSecondComputerMove), any(ContestState.class))).thenReturn(updatedContestState);
+
+      result = service.run(new ContestState());
+    }
+
+    @Test @DisplayName("Expect the contest state to updated ")
+    void UpdatedContestState() {
+      assertEquals(updatedContestState, result);
+    }
+
+    @Test @DisplayName("Expect the game results to be printed with state returned after the second computer move")
+    void PrintResults() {
+      verify(printGameResults).print(stateAfterSecondComputerMove);
+    }
+
   }
 
 }

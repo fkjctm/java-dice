@@ -4,6 +4,7 @@ import net.forkjoin.dice.data.ContestState;
 import net.forkjoin.dice.impl.DiceContestRunnerImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
@@ -17,7 +18,7 @@ public class TestDiceContestRunner {
   private PrintEndOfContestMessage printEndOfContestMessage;
 
   @BeforeEach()
-  private void init() {
+  void Init() {
     printWelcomeMessage = mock(PrintWelcomeMessage.class);
     contestInitializer = mock(ContestInitializer.class);
     gameRunner = mock(GameRunner.class);
@@ -30,47 +31,75 @@ public class TestDiceContestRunner {
       gameRunner, askToContinue, printEndOfContestMessage);
   }
 
-  @Test
-  @DisplayName("When the only a single game is played")
-  public void SingleLoopTest() {
-    var stateInit = new ContestState();
-    when(contestInitializer.initialize()).thenReturn(stateInit);
+  class CommonSetup {
+    ContestState stateInit;
+    ContestState stateAfterFirstGame;
 
-    var stateAfterFirstGame = new ContestState();
-    when(gameRunner.run(stateInit)).thenReturn(stateAfterFirstGame);
+    void Setup() {
+      stateInit = new ContestState();
+      when(contestInitializer.initialize()).thenReturn(stateInit);
 
-    when(askToContinue.ask(stateAfterFirstGame)).thenReturn(false);
-
-    buildService().run();
-
-    verify(printWelcomeMessage).print();
-    verify(contestInitializer).initialize();
-    verify(gameRunner).run(stateInit);
-    verify(askToContinue).ask(stateAfterFirstGame);
+      stateAfterFirstGame = new ContestState();
+      when(gameRunner.run(stateInit)).thenReturn(stateAfterFirstGame);
+    }
   }
 
-  @Test
-  @DisplayName("When multiple games are played")
-  public void MultiGameTest() {
-    var stateInit = new ContestState();
-    when(contestInitializer.initialize()).thenReturn(stateInit);
+  @Nested @DisplayName("When the player plays a single game")
+  class SingleGameSuite extends CommonSetup {
 
-    var stateAfterFirstGame = new ContestState();
-    var stateAfterSecondGame = new ContestState();
-    when(gameRunner.run(stateInit)).thenReturn(stateAfterFirstGame);
-    when(gameRunner.run(stateAfterFirstGame)).thenReturn(stateAfterSecondGame);
+    @BeforeEach
+    void Setup() {
+      super.Setup();
+      when(askToContinue.ask(stateAfterFirstGame)).thenReturn(false);
+      buildService().run();
+    }
 
-    when(askToContinue.ask(stateAfterFirstGame)).thenReturn(true);
-    when(askToContinue.ask(stateAfterSecondGame)).thenReturn(false);
+    @Test @DisplayName("Welcome message should have been displayed")
+    void WelcomeMessage() {
+      verify(printWelcomeMessage).print();
+    }
 
-    buildService().run();
+    @Test @DisplayName("Contest state should have been initialized")
+    void Initializer() {
+      verify(contestInitializer).initialize();
+    }
 
-    verify(printWelcomeMessage).print();
-    verify(contestInitializer).initialize();
-    verify(gameRunner).run(stateInit);
-    verify(askToContinue).ask(stateAfterFirstGame);
+    @Test @DisplayName("The game runner should have been called with initial game state")
+    void GameRunner() {
+      verify(gameRunner).run(stateInit);
+    }
 
-    verify(gameRunner).run(stateAfterFirstGame);
-    verify(askToContinue).ask(stateAfterSecondGame);
+    @Test @DisplayName("The player should be asked if they want to continue")
+    void PlayerAskedToContinue() {
+      verify(askToContinue).ask(stateAfterFirstGame);
+    }
+  }
+
+  @Nested @DisplayName("When the player plays multiple games")
+  class MultiGameSuite extends CommonSetup {
+    ContestState stateAfterSecondGame;
+
+    @BeforeEach
+    void Setup() {
+      super.Setup();
+      when(askToContinue.ask(stateAfterFirstGame)).thenReturn(true);
+
+      stateAfterSecondGame = new ContestState();
+      when(gameRunner.run(stateAfterFirstGame)).thenReturn(stateAfterSecondGame);
+
+      when(askToContinue.ask(stateAfterSecondGame)).thenReturn(false);
+
+      buildService().run();
+    }
+
+    @Test @DisplayName("Game runner should be called for second time with state returned from first game")
+    void GameRunner() {
+      verify(gameRunner).run(stateAfterFirstGame);
+    }
+
+    @Test @DisplayName("Player should be asked to continue with state returned from the second game")
+    void AskToContinue() {
+      verify(askToContinue).ask(stateAfterSecondGame);
+    }
   }
 }
