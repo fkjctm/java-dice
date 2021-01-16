@@ -27,7 +27,6 @@ public class GameRunnerImpl implements GameRunner {
     this.printGameResults = printGameResults;
   }
 
-
   @Override
   public ContestState run(ContestState contestState) {
     GameState gameState = gameInitializer.initialize();
