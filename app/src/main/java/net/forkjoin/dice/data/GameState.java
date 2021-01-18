@@ -41,4 +41,13 @@ public class GameState {
     }
     this.computerScore = computerScore;
   }
+
+  @Override
+  public Object clone() {
+    var newState = new GameState();
+    newState.gameResult = this.gameResult;
+    newState.humanScore = this.humanScore;
+    newState.computerScore = this.computerScore;
+    return newState;
+  }
 }

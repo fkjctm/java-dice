@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("GameState")
 public class TestGameState {
@@ -90,6 +89,25 @@ public class TestGameState {
 
       state.setComputerScore(dieValue);
       assertEquals(dieValue, state.getComputerScore());
+    }
+
+  }
+
+  @Nested @DisplayName("Game state should be cloneable")
+  class CloneableTest {
+
+    @Test @DisplayName("Cloning game state should produce a state with the same properties")
+    void Clone() {
+      var gameState = new GameState();
+      gameState.setGameResult(GameResult.HumanWin);
+      gameState.setHumanScore(5);
+      gameState.setComputerScore(2);
+
+      var clone = (GameState)gameState.clone();
+      assertNotEquals(gameState, clone);
+      assertEquals(gameState.getGameResult(), clone.getGameResult());
+      assertEquals(gameState.getHumanScore(), clone.getHumanScore());
+      assertEquals(gameState.getComputerScore(), clone.getComputerScore());
     }
 
   }
