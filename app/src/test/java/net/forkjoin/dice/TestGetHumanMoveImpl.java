@@ -15,7 +15,7 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@DisplayName("TestGetHumanMoveImpl")
+@DisplayName("GetHumanMoveImpl")
 public class TestGetHumanMoveImpl {
   private PrintStream printStream;
   private InputStream inputStream;
@@ -66,7 +66,6 @@ public class TestGetHumanMoveImpl {
 
   @Nested @DisplayName("User will be assigned a random dice value between 1 and 6")
   class Success {
-    GetHumanMoveImpl service;
     int diceRoll = 3;
     GameState result;
 
@@ -87,6 +86,11 @@ public class TestGetHumanMoveImpl {
     @Test @DisplayName("Expect returned game state to contain the dice roll")
     public void DiceRoll() {
       assertEquals(diceRoll, result.getHumanScore());
+    }
+
+    @Test @DisplayName("Expect the player's roll to be displayed")
+    public void DisplayRoll() {
+      verify(printStream).println(String.format(GetHumanMoveImpl.result, diceRoll));
     }
   }
 
