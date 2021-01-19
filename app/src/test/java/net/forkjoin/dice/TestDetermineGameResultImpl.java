@@ -9,21 +9,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.io.PrintStream;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @DisplayName("DetermineGameResultImpl")
 public class TestDetermineGameResultImpl {
-  private PrintStream printStream;
   private DetermineGameResult service;
 
   @BeforeEach
   void Setup() {
-    printStream = mock(PrintStream.class);
-    service = new DetermineGameResultImpl(printStream);
+    service = new DetermineGameResultImpl();
   }
 
   @Nested @DisplayName("When human score is out of range, expect error thrown")
@@ -85,11 +81,6 @@ public class TestDetermineGameResultImpl {
     void GameResultChanged() {
       assertEquals(GameResult.Tie, resultState.getGameResult());
     }
-
-    @Test @DisplayName("Game result should be printed for the player to see")
-    void GameResultPrinted() {
-      verify(printStream).println(String.format(DetermineGameResultImpl.result, "TIED"));
-    }
   }
 
   @Nested @DisplayName("When human score is greater than computer score, expect win result")
@@ -110,10 +101,6 @@ public class TestDetermineGameResultImpl {
       assertEquals(GameResult.HumanWin, resultState.getGameResult());
     }
 
-    @Test @DisplayName("Game result should be printed for the player to see")
-    void GameResultPrinted() {
-      verify(printStream).println(String.format(DetermineGameResultImpl.result, "WON"));
-    }
   }
 
   @Nested @DisplayName("When human score is less than computer score, expect win result")
@@ -132,11 +119,6 @@ public class TestDetermineGameResultImpl {
     @Test @DisplayName("Game result should be changed to a tie in the game state")
     void GameResultChanged() {
       assertEquals(GameResult.ComputerWin, resultState.getGameResult());
-    }
-
-    @Test @DisplayName("Game result should be printed for the player to see")
-    void GameResultPrinted() {
-      verify(printStream).println(String.format(DetermineGameResultImpl.result, "LOST"));
     }
   }
 }
