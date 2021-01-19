@@ -1,21 +1,19 @@
 package net.forkjoin.dice.impl;
 
 import net.forkjoin.dice.PrintGameResults;
+import net.forkjoin.dice.TerminalService;
 import net.forkjoin.dice.data.GameResult;
 import net.forkjoin.dice.data.GameState;
 import net.forkjoin.dice.exception.PrintGameResultsException;
 
-import java.io.PrintStream;
-
 public class PrintGameResultsImpl implements PrintGameResults {
   public static final String invalidGameResult = "Invalid game result";
-  public static final String printHeader = "Game Results:";
-  public static final String results = "Your Score: %s, Computer Score: %s, Result: %s";
+  public static final String results = "*** %s ***\n\n\n";
 
-  private PrintStream printStream;
+  private TerminalService terminalService;
 
-  public PrintGameResultsImpl(PrintStream printStream) {
-    this.printStream = printStream;
+  public PrintGameResultsImpl(TerminalService terminalService) {
+    this.terminalService = terminalService;
   }
 
   @Override
@@ -24,11 +22,9 @@ public class PrintGameResultsImpl implements PrintGameResults {
       throw new PrintGameResultsException(invalidGameResult);
     }
 
-    printStream.println(printHeader);
     var winStr = gameState.getGameResult() == GameResult.Tie ? "You Tied" :
       (gameState.getGameResult() == GameResult.HumanWin ? "You Won!" : "You Lost");
-    var resultStr = String.format(results, gameState.getHumanScore(), gameState.getComputerScore(), winStr);
-    printStream.println(resultStr);
-
+    var resultStr = String.format(results, winStr);
+    terminalService.printLine(resultStr);
   }
 }

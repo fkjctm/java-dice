@@ -31,6 +31,9 @@ dependencies {
 
   // This dependency is used by the application.
   implementation 'com.google.guava:guava:29.0-jre'
+
+  // text-io
+  compile 'org.beryx:text-io:3.4.1'
 }
 
 application {

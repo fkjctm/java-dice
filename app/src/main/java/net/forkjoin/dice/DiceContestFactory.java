@@ -13,4 +13,22 @@ public interface DiceContestFactory {
   PrintEndOfContestMessage printEndOfContestMessage();
 
   DiceContestRunner diceContestRunner();
+
+  GameInitializer gameInitializer();
+
+  GetHumanMove getHumanMove();
+
+  GetComputerMove getComputerMove();
+
+  DetermineIfGameContinues determineIfGameContinues();
+
+  UpdateContest updateContest();
+
+  PrintGameResults printGameResults();
+
+  DetermineGameResult determineGameResult();
+
+  RandomNumberGenerator randomNumberGenerator();
+
+  TerminalService terminalService();
 }
