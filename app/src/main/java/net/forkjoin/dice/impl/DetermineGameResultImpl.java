@@ -11,11 +11,8 @@ public class DetermineGameResultImpl implements DetermineGameResult {
   public static final String invalidHumanScore = "Invalid human player score";
   public static final String invalidComputerScore = "Invalid computer player score";
   public static final String result = "You have %s this game";
-  private PrintStream printStream;
 
-  public DetermineGameResultImpl(PrintStream printStream) {
-    this.printStream = printStream;
-  }
+  public DetermineGameResultImpl() { }
 
   @Override
   public GameState determine(GameState gameState) {
@@ -28,21 +25,9 @@ public class DetermineGameResultImpl implements DetermineGameResult {
 
     var newGameState = (GameState)gameState.clone();
     var diff = gameState.getHumanScore() - gameState.getComputerScore();
-    String verb;
-    if (diff == 0) {
-      verb = "TIED";
-      newGameState.setGameResult(GameResult.Tie);
-    }
-    else if (diff > 0) {
-      verb = "WON";
-      newGameState.setGameResult(GameResult.HumanWin);
-    }
-    else {
-      verb = "LOST";
-      newGameState.setGameResult(GameResult.ComputerWin);
-    }
+    var result = diff == 0 ? GameResult.Tie : (diff > 0 ? GameResult.HumanWin : GameResult.ComputerWin);
+    newGameState.setGameResult(result);
 
-    printStream.println(String.format(result, verb));
     return newGameState;
   }
 }
