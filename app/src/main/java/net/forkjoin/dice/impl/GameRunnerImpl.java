@@ -12,19 +12,22 @@ public class GameRunnerImpl implements GameRunner {
   private DetermineIfGameContinues determineIfGameContinues;
   private UpdateContest updateContest;
   private PrintGameResults printGameResults;
+  private DetermineGameResult determineGameResult;
 
   public GameRunnerImpl(GameInitializer gameInitializer,
                         GetHumanMove getHumanMove,
                         GetComputerMove getComputerMove,
                         DetermineIfGameContinues determineIfGameContinues,
                         UpdateContest updateContest,
-                        PrintGameResults printGameResults) {
+                        PrintGameResults printGameResults,
+                        DetermineGameResult determineGameResult) {
     this.gameInitializer = gameInitializer;
     this.getHumanMove = getHumanMove;
     this.getComputerMove = getComputerMove;
     this.determineIfGameContinues = determineIfGameContinues;
     this.updateContest = updateContest;
     this.printGameResults = printGameResults;
+    this.determineGameResult = determineGameResult;
   }
 
   @Override
@@ -34,6 +37,7 @@ public class GameRunnerImpl implements GameRunner {
     do {
       gameState = getHumanMove.get(gameState);
       gameState = getComputerMove.get(gameState);
+      gameState = determineGameResult.determine(gameState);
     } while(determineIfGameContinues.determine(gameState));
 
     printGameResults.print(gameState);

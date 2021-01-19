@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@DisplayName("TestGameRunnerImpl")
+@DisplayName("GameRunnerImpl")
 public class TestGameRunnerImpl {
 
   private GameInitializer gameInitializer;
@@ -21,6 +21,7 @@ public class TestGameRunnerImpl {
   private UpdateContest updateContest;
   private PrintGameResults printGameResults;
   private GameRunnerImpl service;
+  private DetermineGameResult determineGameResult;
 
   @BeforeEach
   void Init() {
@@ -30,8 +31,9 @@ public class TestGameRunnerImpl {
     determineIfGameContinues = mock(DetermineIfGameContinues.class);
     updateContest = mock(UpdateContest.class);
     printGameResults = mock(PrintGameResults.class);
+    determineGameResult = mock(DetermineGameResult.class);
     service = new GameRunnerImpl(gameInitializer, getHumanMove, getComputerMove,
-      determineIfGameContinues, updateContest, printGameResults);
+      determineIfGameContinues, updateContest, printGameResults, determineGameResult);
   }
 
   class GameSetup {
@@ -50,6 +52,7 @@ public class TestGameRunnerImpl {
 
       stateAfterComputerMove = new GameState();
       when(getComputerMove.get(stateAfterHumanMove)).thenReturn(stateAfterComputerMove);
+      when(determineGameResult.determine(stateAfterComputerMove)).thenReturn(stateAfterComputerMove);
     }
   }
 
@@ -95,6 +98,7 @@ public class TestGameRunnerImpl {
 
       stateAfterSecondComputerMove = new GameState();
       when(getComputerMove.get(stateAfterSecondHumanMove)).thenReturn(stateAfterSecondComputerMove);
+      when(determineGameResult.determine(stateAfterSecondComputerMove)).thenReturn(stateAfterSecondComputerMove);
 
       when(determineIfGameContinues.determine(stateAfterSecondComputerMove)).thenReturn(false);
 
