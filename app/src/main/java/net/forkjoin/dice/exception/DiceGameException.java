@@ -8,4 +8,8 @@ public abstract class DiceGameException extends RuntimeException {
   public DiceGameException(Exception e) {
     super(e);
   }
+
+  public DiceGameException(String message) {
+    super(message);
+  }
 }
