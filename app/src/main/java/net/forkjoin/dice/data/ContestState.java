@@ -24,7 +24,7 @@ public class ContestState {
   }
 
   @Override
-  protected Object clone() throws CloneNotSupportedException {
+  public Object clone() {
     var newState = new ContestState();
     newState.gameHistory.addAll(this.gameHistory);
     return newState;
