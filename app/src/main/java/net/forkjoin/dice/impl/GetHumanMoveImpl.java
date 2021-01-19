@@ -10,6 +10,7 @@ import java.io.PrintStream;
 
 public class GetHumanMoveImpl implements GetHumanMove {
   public static final String message = "When you are ready, press any key to roll the dice";
+  public static final String result = "Your dice roll was a %s";
   public static final int diceRollMin = 1;
   public static final int diceRollMax = 6;
   private PrintStream printStream;
@@ -30,7 +31,9 @@ public class GetHumanMoveImpl implements GetHumanMove {
       printStream.println(message);
       inputStream.readNBytes(1);
       var newGameState = (GameState) gameState.clone();
-      newGameState.setHumanScore(randomNumberGenerator.generate(diceRollMin,diceRollMax));
+      var diceRoll = randomNumberGenerator.generate(diceRollMin,diceRollMax);
+      newGameState.setHumanScore(diceRoll);
+      printStream.println(String.format(result, diceRoll));
       return newGameState;
     }
     catch (Exception e) {
