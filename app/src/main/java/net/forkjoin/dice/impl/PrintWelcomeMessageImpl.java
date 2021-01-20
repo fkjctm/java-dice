@@ -1,8 +1,7 @@
 package net.forkjoin.dice.impl;
 
 import net.forkjoin.dice.PrintWelcomeMessage;
-
-import java.io.PrintStream;
+import net.forkjoin.dice.TerminalService;
 
 public class PrintWelcomeMessageImpl implements PrintWelcomeMessage {
   public static final String message =
@@ -11,21 +10,21 @@ public class PrintWelcomeMessageImpl implements PrintWelcomeMessage {
       .append("Console Dice Game \n")
       .append("\n")
       .append("Rules: \n")
-      .append("You will compete against a computer by rolling  \n")
-      .append("a single 6-sided die. The player with the higher \n")
+      .append("You will compete against a computer by alternating  \n")
+      .append("rolls of a 6-sided die. The player with the higher \n")
       .append("die value wins. If both players roll the same \n")
-      .append("die, it is tie.")
+      .append("die, it is a tie.\n")
       .append("********************************************\n")
       .toString();
 
-  private PrintStream printStream;
+  private TerminalService terminalService;
 
-  public PrintWelcomeMessageImpl(PrintStream printStream){
-    this.printStream = printStream;
+  public PrintWelcomeMessageImpl(TerminalService terminalService){
+    this.terminalService = terminalService;
   }
 
   @Override
   public void print() {
-    this.printStream.println(message);
+    terminalService.printLine(message);
   }
 }

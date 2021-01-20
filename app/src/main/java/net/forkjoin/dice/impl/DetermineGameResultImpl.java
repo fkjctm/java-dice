@@ -5,8 +5,6 @@ import net.forkjoin.dice.data.GameResult;
 import net.forkjoin.dice.data.GameState;
 import net.forkjoin.dice.exception.DetermineGameResultException;
 
-import java.io.PrintStream;
-
 public class DetermineGameResultImpl implements DetermineGameResult {
   public static final String invalidHumanScore = "Invalid human player score";
   public static final String invalidComputerScore = "Invalid computer player score";

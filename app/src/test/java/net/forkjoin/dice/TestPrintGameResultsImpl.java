@@ -11,21 +11,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.io.PrintStream;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @DisplayName("PrintGameResultsImpl")
 public class TestPrintGameResultsImpl {
-  private PrintStream printStream;
+  private TerminalService terminalService;
   private PrintGameResultsImpl service;
 
   @BeforeEach
   void Setup() {
-    printStream = mock(PrintStream.class);
-    service = new PrintGameResultsImpl(printStream);
+    terminalService = mock(TerminalService.class);
+    service = new PrintGameResultsImpl(terminalService);
   }
 
   @Nested @DisplayName("With an invalid game result")
@@ -65,10 +63,8 @@ public class TestPrintGameResultsImpl {
       }};
       service.print(gameState);
 
-      verify(printStream).println(PrintGameResultsImpl.printHeader);
-      var expectedResultString = String.format(PrintGameResultsImpl.results,
-        humanScore, computerScore, expectedWinString);
-      verify(printStream).println(expectedResultString);
+      var expectedResultString = String.format(PrintGameResultsImpl.results, expectedWinString);
+      verify(terminalService).printLine(expectedResultString);
     }
 
   }

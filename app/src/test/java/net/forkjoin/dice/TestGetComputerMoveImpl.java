@@ -1,7 +1,6 @@
 package net.forkjoin.dice;
 
 import net.forkjoin.dice.data.GameState;
-import net.forkjoin.dice.exception.GetHumanMoveException;
 import net.forkjoin.dice.impl.GetComputerMoveImpl;
 import net.forkjoin.dice.impl.GetHumanMoveImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,21 +8,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @DisplayName("GetComputerMoveImpl")
 public class TestGetComputerMoveImpl {
-  private PrintStream printStream;
   private RandomNumberGenerator randomNumberGenerator;
+  private TerminalService terminalService;
 
   @BeforeEach
   void Setup() {
-    printStream = mock(PrintStream.class);
+    terminalService = mock(TerminalService.class);
     randomNumberGenerator = mock(RandomNumberGenerator.class);
   }
 
@@ -36,7 +31,7 @@ public class TestGetComputerMoveImpl {
     void Setup() {
       when(randomNumberGenerator.generate(GetHumanMoveImpl.diceRollMin, GetHumanMoveImpl.diceRollMax))
         .thenReturn(diceRoll);
-      var service = new GetComputerMoveImpl(printStream, randomNumberGenerator);
+      var service = new GetComputerMoveImpl(terminalService, randomNumberGenerator);
       result = service.get(new GameState());
     }
 
@@ -47,7 +42,7 @@ public class TestGetComputerMoveImpl {
 
     @Test @DisplayName("Expect the computer's roll to be displayed")
     public void DisplayRoll() {
-      verify(printStream).println(String.format(GetComputerMoveImpl.result, diceRoll));
+      verify(terminalService).printLine(String.format(GetComputerMoveImpl.result, diceRoll));
     }
   }
 
