@@ -31,4 +31,8 @@ public interface DiceContestFactory {
   RandomNumberGenerator randomNumberGenerator();
 
   TerminalService terminalService();
+
+  PrintGameRules printGameRules();
+
+  PrintTieRules printTieRules();
 }

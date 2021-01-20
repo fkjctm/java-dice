@@ -4,13 +4,29 @@ import net.forkjoin.dice.*;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 
+import java.util.Arrays;
+
 public class DiceContestFactoryImpl implements DiceContestFactory {
   private static TextIO textIO = null;
-
-  public DiceContestFactoryImpl(String[] args) {}
+  private final boolean lowScoreWins;
+  private final boolean tiesAllowed;
 
   public static void setTextIO(TextIO value) {
     textIO = value;
+  }
+
+  public DiceContestFactoryImpl(String[] args) {
+    var argArray = Arrays.stream(args).map(a -> a.trim().toLowerCase()).toArray();
+    lowScoreWins = Arrays.stream(argArray).filter(a -> a.equals("--low-wins")).findFirst().isPresent();
+    tiesAllowed = !Arrays.stream(argArray).filter(a -> a.equals("--no-ties")).findFirst().isPresent();
+  }
+
+  public boolean getLowScoreWins() {
+    return lowScoreWins;
+  }
+
+  public boolean getTiesAllowed() {
+    return tiesAllowed;
   }
 
   @Override
@@ -42,8 +58,8 @@ public class DiceContestFactoryImpl implements DiceContestFactory {
 
   @Override
   public DiceContestRunner diceContestRunner() {
-    return new DiceContestRunnerImpl(printWelcomeMessage(), contestInitializer(),
-      gameRunner(), askToContinue(), printEndOfContestMessage());
+    return new DiceContestRunnerImpl(printWelcomeMessage(), contestInitializer(), gameRunner(),
+      askToContinue(), printEndOfContestMessage(), printGameRules(), printTieRules());
   }
 
   @Override
@@ -63,7 +79,8 @@ public class DiceContestFactoryImpl implements DiceContestFactory {
 
   @Override
   public DetermineIfGameContinues determineIfGameContinues() {
-    return new DetermineIfGameContinuesImpl();
+    return tiesAllowed ? new DetermineIfGameContinuesImpl()
+                       : new DetermineIfGameContinuesImplNoTiesAllowed(terminalService());
   }
 
   @Override
@@ -78,7 +95,7 @@ public class DiceContestFactoryImpl implements DiceContestFactory {
 
   @Override
   public DetermineGameResult determineGameResult() {
-    return new DetermineGameResultImpl();
+    return lowScoreWins ? new DetermineGameResultImplLowScoreWins() : new DetermineGameResultImpl();
   }
 
   @Override
@@ -92,4 +109,15 @@ public class DiceContestFactoryImpl implements DiceContestFactory {
     return new TerminalServiceImpl(textIO);
   }
 
+  @Override
+  public PrintGameRules printGameRules() {
+    return lowScoreWins ? new PrintGameRulesImplLowScoreWins(terminalService())
+                        : new PrintGameRulesImplHighScoreWins(terminalService());
+  }
+
+  @Override
+  public PrintTieRules printTieRules() {
+    return tiesAllowed ? new PrintTieRulesImplTiesAllowed(terminalService())
+                       : new PrintTieRulesImplTiesNotAllowed(terminalService());
+  }
 }
