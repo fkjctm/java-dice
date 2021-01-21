@@ -5,7 +5,7 @@ import net.forkjoin.dice.TerminalService;
 
 public class PrintTieRulesImplTiesNotAllowed implements PrintTieRules {
   public static final String rules = "\nIf both players roll the same number, \n" +
-                                     "the game continues until there is a winner.";
+                                     "the game continues until there is a winner.\n";
   private TerminalService terminalService;
 
   public PrintTieRulesImplTiesNotAllowed(TerminalService terminalService) {
