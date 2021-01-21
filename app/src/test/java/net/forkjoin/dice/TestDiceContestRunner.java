@@ -16,6 +16,8 @@ public class TestDiceContestRunner {
   private GameRunner gameRunner;
   private AskToContinue askToContinue;
   private PrintEndOfContestMessage printEndOfContestMessage;
+  private PrintGameRules printGameRules;
+  private PrintTieRules printTieRules;
 
   @BeforeEach()
   void Init() {
@@ -24,11 +26,13 @@ public class TestDiceContestRunner {
     gameRunner = mock(GameRunner.class);
     askToContinue = mock(AskToContinue.class);
     printEndOfContestMessage = mock(PrintEndOfContestMessage.class);
+    printGameRules = mock(PrintGameRules.class);
+    printTieRules = mock(PrintTieRules.class);
   }
 
   private DiceContestRunner buildService() {
-    return new DiceContestRunnerImpl(printWelcomeMessage, contestInitializer,
-      gameRunner, askToContinue, printEndOfContestMessage);
+    return new DiceContestRunnerImpl(printWelcomeMessage, contestInitializer, gameRunner,
+      askToContinue, printEndOfContestMessage, printGameRules, printTieRules);
   }
 
   class CommonSetup {
@@ -57,6 +61,16 @@ public class TestDiceContestRunner {
     @Test @DisplayName("Welcome message should have been displayed")
     void WelcomeMessage() {
       verify(printWelcomeMessage).print();
+    }
+
+    @Test @DisplayName("Game rules should have been displayed")
+    void GameRules() {
+      verify(printGameRules).print();
+    }
+
+    @Test @DisplayName("User should be informed what happens in the case of a tie")
+    void TieRules() {
+      verify(printTieRules).print();
     }
 
     @Test @DisplayName("Contest state should have been initialized")

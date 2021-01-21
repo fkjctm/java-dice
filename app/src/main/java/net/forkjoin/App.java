@@ -8,6 +8,4 @@ public class App {
     var contestFactory = new DiceContestFactoryImpl(args);
     contestFactory.diceContestRunner().run();
   }
-
 }
-

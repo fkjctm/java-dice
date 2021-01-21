@@ -9,13 +9,11 @@ import static org.mockito.Mockito.verify;
 
 @DisplayName("PrintWelcomeMessageImpl")
 public class TestPrintWelcomeMessageImpl {
+  TerminalService terminalServiceMock = mock(TerminalService.class);
 
-  @Test
-  @DisplayName("Should print the welcome message with rules to the print stream")
-  void WriteMessage() {
-    var terminalServiceMock = mock(TerminalService.class);
+  @Test @DisplayName("The user should see a message with the name of the game")
+  void NameOfGameMessage() {
     var service = new PrintWelcomeMessageImpl(terminalServiceMock);
-
     service.print();
 
     verify(terminalServiceMock).printLine(PrintWelcomeMessageImpl.message);
